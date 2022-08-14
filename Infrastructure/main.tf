@@ -40,9 +40,9 @@ resource "aws_autoscaling_group" "webserver" {
   #availability_zones   = ["us-east-1a", "us-east-1b"]
   name                 = "autoscalinggroupfinalproject"
   launch_configuration = aws_launch_configuration.webserver.name
-  min_size             = 1
-  max_size             = 2
-  desired_capacity     = 1
+  min_size             = 2
+  max_size             = 3
+  desired_capacity     = 2
   vpc_zone_identifier = [
     aws_subnet.public__a.id,
     aws_subnet.public__b.id
