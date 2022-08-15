@@ -18,12 +18,7 @@ resource "aws_launch_configuration" "webserver" {
   name_prefix                 = "jahnavi"
   image_id                    = data.aws_ami.i.id
   instance_type               = "t2.micro"
-  user_data                   = <<EOF
-  #!/bin/bash
-  sudo apt-get install docker-engine -y
-  sudo service docker start
-  sudo docker run hello-world
-  EOF
+  #user_data                   = 
   associate_public_ip_address = true
   lifecycle {
     create_before_destroy = true
@@ -33,6 +28,23 @@ resource "aws_launch_configuration" "webserver" {
 resource "aws_autoscaling_group" "webserver" {
   #availability_zones   = ["us-east-1a", "us-east-1b"]
   name                 = "autoscalinggroupfinalproject"
+  launch_configuration = aws_launch_configuration.webserver.name
+  min_size             = 2
+  max_size             = 3
+  desired_capacity     = 2
+  vpc_zone_identifier = [
+    aws_subnet.public__a.id,
+    aws_subnet.public__b.id
+  ]
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "database" {
+  #availability_zones   = ["us-east-1a", "us-east-1b"]
+  name                 = "autoscalinggroup2"
   launch_configuration = aws_launch_configuration.webserver.name
   min_size             = 2
   max_size             = 3
