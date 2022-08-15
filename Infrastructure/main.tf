@@ -25,7 +25,6 @@ resource "aws_launch_configuration" "webserver" {
   sudo docker run hello-world
   EOF
   associate_public_ip_address = true
-
   lifecycle {
     create_before_destroy = true
   }
@@ -42,6 +41,7 @@ resource "aws_autoscaling_group" "webserver" {
     aws_subnet.public__a.id,
     aws_subnet.public__b.id
   ]
+  
   lifecycle {
     create_before_destroy = true
   }
