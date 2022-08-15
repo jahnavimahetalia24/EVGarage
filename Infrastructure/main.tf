@@ -3,6 +3,11 @@ provider "aws" {
   alias = "east"
 }
 
+resource "aws_key_pair" "name" {
+  key_name = "deployer_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD0W0lZwALc8CkBSebs9Pf6NdpgT+4hk3/JeIzQyzX0dJoTajTcko8Lr2+/3ctngGNUeryrLawP4NRdT8WaxjWej6cHPvuz14fIuYHoJpWel2C+GILLQstzHLLnpon8D7JmXDdlGzcT9L9QQaJ3kQLsu4SZkuNsUX+CZ4kxIA34yVVpHM/StMrSQBAtciGdCBLUh/Wv3NMomFZS+YjMWH5/uiJbtRy17XO1Z0d7pZbnj6bWL/azXUmyj9jUPV7EhQUVoUM54sy8H22YrHHUGiymbbjSwozU5RTGEibqFSW6G+RVWvDSKXsSFrNWeGLwSVBjFnMLbLvxLdYPhIPCipTlB+0uQyKIEx8nbWSnXh1pQwQApMPYngVhco8Yj7nlJ/Uk9K8c/cAwGT5C5kiQXMEQNgZwUbAOH8d2lB5QO5zXq/fva+Osinm5AZ5/CEYKhlZ91hFLkXT2ePzbCxSdK3s9d0VGcUQKoCHWAbXaDifLaOrWHaDU2zx77fNiz3k/i28= jahnavimahetalia@Jahnavis-MacBook-Air.local"
+}
+
 data "aws_ami" "i" {
   provider = aws.east
   owners = ["amazon"]
@@ -17,8 +22,16 @@ data "aws_ami" "i" {
 resource "aws_launch_configuration" "webserver" {
   name_prefix                 = "jahnavi"
   image_id                    = data.aws_ami.i.id
+  key_name                    = "deployer_key"
+  #ami                        = "ami-052efd3df9dad4825"
   instance_type               = "t2.micro"
-  #user_data                   = 
+  security_groups = [
+    aws_security_group.default.id
+  ]
+  depends_on = [
+    aws_internet_gateway.default
+  ]
+  #user_data                  = 
   associate_public_ip_address = true
   lifecycle {
     create_before_destroy = true
@@ -53,7 +66,6 @@ resource "aws_autoscaling_group" "database" {
     aws_subnet.public__a.id,
     aws_subnet.public__b.id
   ]
-  
   lifecycle {
     create_before_destroy = true
   }
